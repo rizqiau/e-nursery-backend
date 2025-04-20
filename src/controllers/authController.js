@@ -1,4 +1,8 @@
-const { registerUser, loginUser } = require("../services/userServices");
+const {
+  registerUser,
+  loginUser,
+  generateUserId,
+} = require("../services/userServices");
 
 // Handler untuk register
 async function register(req, res) {
