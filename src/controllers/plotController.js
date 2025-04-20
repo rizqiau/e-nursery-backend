@@ -15,7 +15,14 @@ async function addPlot(req, res) {
     } = req.body;
 
     // Validate input
-    if (!nama_plot || !luas_area || !tanggal_tanam || !latitude || !longitude) {
+    if (
+      !id_plot ||
+      !nama_plot ||
+      !luas_area ||
+      !tanggal_tanam ||
+      !latitude ||
+      !longitude
+    ) {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
