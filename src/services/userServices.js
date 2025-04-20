@@ -67,7 +67,31 @@ async function loginUser(email, password) {
   }
 }
 
+// Function untuk generate ID user baru
+async function generateUserId() {
+  try {
+    // Ambil ID user terakhir yang disimpan
+    const { data, error } = await supabase
+      .from("user")
+      .select("id_user")
+      .order("id_user", { ascending: false })
+      .limit(1);
+
+    // Jika tidak ada data, mulai dengan ID P0001
+    if (data && data.length > 0) {
+      const lastUserId = data[0].id_user; // Ambil ID terakhir
+      const lastNumber = parseInt(lastUserId.substring(1)); // Ambil angka setelah "P"
+      return `P${(lastNumber + 1).toString().padStart(4, "0")}`; // Generate ID baru
+    } else {
+      return "P0001"; // Jika tidak ada user, ID pertama adalah P0001
+    }
+  } catch (error) {
+    throw new Error("Gagal generate user ID: " + error.message);
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
+  generateUserId,
 };

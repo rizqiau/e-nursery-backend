@@ -3,14 +3,15 @@ const { registerUser, loginUser } = require("../services/userServices");
 // Handler untuk register
 async function register(req, res) {
   try {
-    const { id_user, nama_user, foto, email, password, role_id, wilayah_id } =
-      req.body;
+    const { nama_user, foto, email, password, role_id, wilayah_id } = req.body;
 
     if (!email || !password) {
       return res
         .status(400)
         .json({ message: "Email dan password wajib diisi" });
     }
+
+    const id_user = await generateUserId();
 
     const user = await registerUser({
       id_user,
