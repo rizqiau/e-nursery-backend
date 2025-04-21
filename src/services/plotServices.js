@@ -55,7 +55,22 @@ async function bulkAddPlotsToDb(plots) {
   }
 }
 
+async function getAllPlotsFromDb() {
+  try {
+    const { data, error } = await supabase.from("plot").select("*");
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+  } catch (error) {
+    throw new Error("Failed to get plots: " + error.message);
+  }
+}
+
 module.exports = {
   addPlotToDb,
   bulkAddPlotsToDb,
+  getAllPlotsFromDb,
 };

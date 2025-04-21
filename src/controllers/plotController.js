@@ -1,5 +1,6 @@
 const { addPlotToDb } = require("../services/plotServices");
 const { bulkAddPlotsToDb } = require("../services/plotServices");
+const { getAllPlotsFromDb } = require("../services/plotServices");
 
 async function addPlot(req, res) {
   try {
@@ -71,7 +72,17 @@ async function bulkAddPlots(req, res) {
   }
 }
 
+async function getAllPlots(req, res) {
+  try {
+    const plots = await getAllPlotsFromDb();
+    res.status(200).json(plots); // <-- kirim langsung array
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   addPlot,
   bulkAddPlots,
+  getAllPlots,
 };
