@@ -40,6 +40,22 @@ async function addPlotToDb({
   }
 }
 
+async function bulkAddPlotsToDb(plots) {
+  try {
+    // Insert all plots into the plot table in Supabase
+    const { data, error } = await supabase.from("plot").insert(plots).select(); // Return inserted data
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data; // Return list of inserted plots
+  } catch (error) {
+    throw new Error("Failed to bulk insert plots: " + error.message);
+  }
+}
+
 module.exports = {
   addPlotToDb,
+  bulkAddPlotsToDb,
 };

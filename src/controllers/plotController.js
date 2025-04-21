@@ -1,4 +1,5 @@
 const { addPlotToDb } = require("../services/plotServices");
+const { bulkAddPlotsToDb } = require("../services/plotServices");
 
 async function addPlot(req, res) {
   try {
@@ -48,6 +49,29 @@ async function addPlot(req, res) {
   }
 }
 
+async function bulkAddPlots(req, res) {
+  try {
+    const plots = req.body; // Expect array of plots
+
+    if (!Array.isArray(plots) || plots.length === 0) {
+      return res.status(400).json({
+        message: "Data plot harus berupa array dan tidak boleh kosong.",
+      });
+    }
+
+    // Add plots to the database
+    const insertedPlots = await bulkAddPlotsToDb(plots);
+
+    res.status(201).json({
+      message: "Bulk insert plot berhasil",
+      data: insertedPlots,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   addPlot,
+  bulkAddPlots,
 };
