@@ -14,7 +14,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/plot", plotRoutes);
-app.use("/api/upload", uploadRoutes);
+app.use("/api", uploadRoutes);
 
 // Root route (optional buat cek server nyala)
 app.get("/", (req, res) => {
