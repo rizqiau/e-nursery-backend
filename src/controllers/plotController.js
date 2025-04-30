@@ -136,23 +136,23 @@ async function updatePlot(req, res) {
 
 async function bulkUpdatePlots(req, res) {
   try {
-    const plots = req.body; // Expect array of plots
-
+    const plots = req.body;
     if (!Array.isArray(plots) || plots.length === 0) {
-      return res.status(400).json({
-        message: "Data plot harus berupa array dan tidak boleh kosong.",
-      });
+      return res.status(400).json({ message: "Data plot harus berupa array" });
     }
 
-    // Update plot di database
+    console.log("Mulai proses bulk update");
     const updatedPlots = await bulkUpdatePlotsToDb(plots);
 
-    res.status(200).json({
-      message: "Bulk update plot berhasil",
+    console.log("Selesai update");
+    // PASTIKAN ini selalu dijalankan untuk selesaikan request!
+    return res.status(200).json({
+      message: "Bulk update berhasil",
       data: updatedPlots,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // PASTIKAN error juga di-handle dengan proper response
+    return res.status(500).json({ message: error.message });
   }
 }
 
