@@ -57,40 +57,23 @@ async function addPlot(req, res) {
 
 async function bulkAddPlots(req, res) {
   try {
-    const plots = req.body;
+    const plots = req.body; // Expect array of plots
 
-    if (!Array.isArray(plots)) {
+    if (!Array.isArray(plots) || plots.length === 0) {
       return res.status(400).json({
-        status: "error",
-        message: "Data harus berupa array",
+        message: "Data plot harus berupa array dan tidak boleh kosong.",
       });
     }
 
-    // Validasi struktur data
-    const isValid = plots.every((plot) => {
-      return plot.id_plot && plot.nama_plot && plot.luas_area;
-    });
-
-    if (!isValid) {
-      return res.status(400).json({
-        status: "error",
-        message: "Data plot tidak lengkap",
-      });
-    }
-
-    const result = await bulkAddPlotsToDb(plots);
+    // Add plots to the database
+    const insertedPlots = await bulkAddPlotsToDb(plots);
 
     res.status(201).json({
-      status: "success",
-      data: result,
-      message: `Berhasil sinkronisasi ${result.length} plot`,
+      message: "Bulk insert plot berhasil",
+      data: insertedPlots,
     });
   } catch (error) {
-    console.error("[BULK ADD ERROR]", error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Terjadi kesalahan server",
-    });
+    res.status(500).json({ message: error.message });
   }
 }
 
@@ -175,17 +158,15 @@ async function deletePlot(req, res) {
   try {
     const id_plot = req.params.id;
 
-    // Hard delete dari Supabase
-    const { error } = await supabase
-      .from("plot")
-      .delete()
-      .eq("id_plot", id_plot);
+    if (!id_plot) {
+      return res.status(400).json({ message: "Plot ID is required" });
+    }
 
-    if (error) throw error;
+    // Delete plot dari database
+    await deletePlotFromDb(id_plot);
 
     res.status(200).json({
-      message: "Plot berhasil dihapus",
-      data: { id_plot },
+      message: "Plot deleted successfully",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

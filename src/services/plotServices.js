@@ -42,18 +42,16 @@ async function addPlotToDb({
 
 async function bulkAddPlotsToDb(plots) {
   try {
-    const { data, error } = await supabase
-      .from("plot")
-      .upsert(plots, {
-        onConflict: "id_plot", // Pastikan kolom id_plot memiliki unique constraint di database
-        ignoreDuplicates: false,
-      })
-      .select();
+    // Insert all plots into the plot table in Supabase
+    const { data, error } = await supabase.from("plot").insert(plots).select(); // Return inserted data
 
-    if (error) throw error;
-    return data;
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data; // Return list of inserted plots
   } catch (error) {
-    throw new Error(`Gagal upsert batch: ${error.message}`);
+    throw new Error("Failed to bulk insert plots: " + error.message);
   }
 }
 
@@ -111,12 +109,39 @@ async function updatePlotInDb({
 
 async function bulkUpdatePlotsToDb(plots) {
   try {
-    const { data, error } = await supabase.from("plot").update(plots).select();
+    // Update satu per satu (Supabase gak support bulk update)
+    const updatedPlots = [];
 
-    if (error) throw error;
-    return data;
+    for (const plot of plots) {
+      const { data, error } = await supabase
+        .from("plot")
+        .update({
+          nama_plot: plot.nama_plot,
+          luas_area: plot.luas_area,
+          tanggal_tanam: plot.tanggal_tanam,
+          tanggal_transplanting: plot.tanggal_transplanting,
+          varietas: plot.varietas,
+          latitude: plot.latitude,
+          longitude: plot.longitude,
+          jumlah_bibit: plot.jumlah_bibit,
+        })
+        .eq("id_plot", plot.id_plot)
+        .select();
+
+      if (error) {
+        throw new Error(
+          `Failed to update plot ${plot.id_plot}: ${error.message}`
+        );
+      }
+
+      if (data && data.length > 0) {
+        updatedPlots.push(data[0]);
+      }
+    }
+
+    return updatedPlots; // Return list plot yang diupdate
   } catch (error) {
-    throw new Error(`Gagal update batch: ${error.message}`);
+    throw new Error("Failed to bulk update plots: " + error.message);
   }
 }
 
