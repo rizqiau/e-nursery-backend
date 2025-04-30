@@ -60,25 +60,37 @@ async function bulkAddPlots(req, res) {
     const plots = req.body;
 
     if (!Array.isArray(plots)) {
-      return res.status(400).json({ message: "Data harus berupa array" });
+      return res.status(400).json({
+        status: "error",
+        message: "Data harus berupa array",
+      });
     }
 
-    // Pisahkan data baru dan update
-    const newPlots = plots.filter((p) => !p.id_plot);
-    const existingPlots = plots.filter((p) => p.id_plot);
+    // Validasi struktur data
+    const isValid = plots.every((plot) => {
+      return plot.id_plot && plot.nama_plot && plot.luas_area;
+    });
 
-    // Proses data baru
-    const inserted = await bulkAddPlotsToDb(newPlots);
+    if (!isValid) {
+      return res.status(400).json({
+        status: "error",
+        message: "Data plot tidak lengkap",
+      });
+    }
 
-    // Proses update
-    const updated = await bulkUpdatePlotsToDb(existingPlots);
+    const result = await bulkAddPlotsToDb(plots);
 
     res.status(201).json({
-      message: "Bulk upsert berhasil",
-      data: [...inserted, ...updated],
+      status: "success",
+      data: result,
+      message: `Berhasil sinkronisasi ${result.length} plot`,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("[BULK ADD ERROR]", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message || "Terjadi kesalahan server",
+    });
   }
 }
 

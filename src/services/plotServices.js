@@ -42,16 +42,18 @@ async function addPlotToDb({
 
 async function bulkAddPlotsToDb(plots) {
   try {
-    // Gunakan upsert untuk handle duplicate key
     const { data, error } = await supabase
       .from("plot")
-      .upsert(plots, { onConflict: "id_plot" }) // <-- Ubah ke upsert
+      .upsert(plots, {
+        onConflict: "id_plot", // Pastikan kolom id_plot memiliki unique constraint di database
+        ignoreDuplicates: false,
+      })
       .select();
 
-    if (error) throw new Error(error.message);
+    if (error) throw error;
     return data;
   } catch (error) {
-    throw new Error("Failed to bulk upsert plots: " + error.message);
+    throw new Error(`Gagal upsert batch: ${error.message}`);
   }
 }
 
@@ -109,28 +111,12 @@ async function updatePlotInDb({
 
 async function bulkUpdatePlotsToDb(plots) {
   try {
-    const updates = plots.map((plot) => ({
-      id_plot: plot.id_plot,
-      nama_plot: plot.nama_plot,
-      luas_area: plot.luas_area,
-      tanggal_tanam: plot.tanggal_tanam,
-      tanggal_transplanting: plot.tanggal_transplanting,
-      varietas: plot.varietas,
-      latitude: plot.latitude,
-      longitude: plot.longitude,
-      jumlah_bibit: plot.jumlah_bibit,
-    }));
+    const { data, error } = await supabase.from("plot").update(plots).select();
 
-    // Gunakan upsert untuk update
-    const { data, error } = await supabase
-      .from("plot")
-      .upsert(updates)
-      .select();
-
-    if (error) throw new Error(error.message);
+    if (error) throw error;
     return data;
   } catch (error) {
-    throw new Error("Failed to bulk update plots: " + error.message);
+    throw new Error(`Gagal update batch: ${error.message}`);
   }
 }
 
