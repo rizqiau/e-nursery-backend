@@ -57,20 +57,25 @@ async function addPlot(req, res) {
 
 async function bulkAddPlots(req, res) {
   try {
-    const plots = req.body; // Expect array of plots
+    const plots = req.body;
 
-    if (!Array.isArray(plots) || plots.length === 0) {
-      return res.status(400).json({
-        message: "Data plot harus berupa array dan tidak boleh kosong.",
-      });
+    if (!Array.isArray(plots)) {
+      return res.status(400).json({ message: "Data harus berupa array" });
     }
 
-    // Add plots to the database
-    const insertedPlots = await bulkAddPlotsToDb(plots);
+    // Pisahkan data baru dan update
+    const newPlots = plots.filter((p) => !p.id_plot);
+    const existingPlots = plots.filter((p) => p.id_plot);
+
+    // Proses data baru
+    const inserted = await bulkAddPlotsToDb(newPlots);
+
+    // Proses update
+    const updated = await bulkUpdatePlotsToDb(existingPlots);
 
     res.status(201).json({
-      message: "Bulk insert plot berhasil",
-      data: insertedPlots,
+      message: "Bulk upsert berhasil",
+      data: [...inserted, ...updated],
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -141,10 +146,8 @@ async function bulkUpdatePlots(req, res) {
       return res.status(400).json({ message: "Data plot harus berupa array" });
     }
 
-    console.log("Mulai proses bulk update");
     const updatedPlots = await bulkUpdatePlotsToDb(plots);
 
-    console.log("Selesai update");
     // PASTIKAN ini selalu dijalankan untuk selesaikan request!
     return res.status(200).json({
       message: "Bulk update berhasil",
@@ -160,15 +163,17 @@ async function deletePlot(req, res) {
   try {
     const id_plot = req.params.id;
 
-    if (!id_plot) {
-      return res.status(400).json({ message: "Plot ID is required" });
-    }
+    // Hard delete dari Supabase
+    const { error } = await supabase
+      .from("plot")
+      .delete()
+      .eq("id_plot", id_plot);
 
-    // Delete plot dari database
-    await deletePlotFromDb(id_plot);
+    if (error) throw error;
 
     res.status(200).json({
-      message: "Plot deleted successfully",
+      message: "Plot berhasil dihapus",
+      data: { id_plot },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

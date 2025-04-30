@@ -42,16 +42,16 @@ async function addPlotToDb({
 
 async function bulkAddPlotsToDb(plots) {
   try {
-    // Insert all plots into the plot table in Supabase
-    const { data, error } = await supabase.from("plot").insert(plots).select(); // Return inserted data
+    // Gunakan upsert untuk handle duplicate key
+    const { data, error } = await supabase
+      .from("plot")
+      .upsert(plots, { onConflict: "id_plot" }) // <-- Ubah ke upsert
+      .select();
 
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data; // Return list of inserted plots
+    if (error) throw new Error(error.message);
+    return data;
   } catch (error) {
-    throw new Error("Failed to bulk insert plots: " + error.message);
+    throw new Error("Failed to bulk upsert plots: " + error.message);
   }
 }
 
@@ -109,37 +109,26 @@ async function updatePlotInDb({
 
 async function bulkUpdatePlotsToDb(plots) {
   try {
-    // Update satu per satu (Supabase gak support bulk update)
-    const updatedPlots = [];
+    const updates = plots.map((plot) => ({
+      id_plot: plot.id_plot,
+      nama_plot: plot.nama_plot,
+      luas_area: plot.luas_area,
+      tanggal_tanam: plot.tanggal_tanam,
+      tanggal_transplanting: plot.tanggal_transplanting,
+      varietas: plot.varietas,
+      latitude: plot.latitude,
+      longitude: plot.longitude,
+      jumlah_bibit: plot.jumlah_bibit,
+    }));
 
-    for (const plot of plots) {
-      const { data, error } = await supabase
-        .from("plot")
-        .update({
-          nama_plot: plot.nama_plot,
-          luas_area: plot.luas_area,
-          tanggal_tanam: plot.tanggal_tanam,
-          tanggal_transplanting: plot.tanggal_transplanting,
-          varietas: plot.varietas,
-          latitude: plot.latitude,
-          longitude: plot.longitude,
-          jumlah_bibit: plot.jumlah_bibit,
-        })
-        .eq("id_plot", plot.id_plot)
-        .select();
+    // Gunakan upsert untuk update
+    const { data, error } = await supabase
+      .from("plot")
+      .upsert(updates)
+      .select();
 
-      if (error) {
-        throw new Error(
-          `Failed to update plot ${plot.id_plot}: ${error.message}`
-        );
-      }
-
-      if (data && data.length > 0) {
-        updatedPlots.push(data[0]);
-      }
-    }
-
-    return updatedPlots; // Return list plot yang diupdate
+    if (error) throw new Error(error.message);
+    return data;
   } catch (error) {
     throw new Error("Failed to bulk update plots: " + error.message);
   }
