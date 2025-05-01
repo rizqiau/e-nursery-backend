@@ -42,16 +42,19 @@ async function addPlotToDb({
 
 async function bulkAddPlotsToDb(plots) {
   try {
-    // Insert all plots into the plot table in Supabase
-    const { data, error } = await supabase.from("plot").insert(plots).select(); // Return inserted data
+    // Ganti insert jadi upsert untuk handle duplicate key
+    const { data, error } = await supabase
+      .from("plot")
+      .upsert(plots, { onConflict: "id_plot" }) // Kunci perubahan ada di sini
+      .select();
 
     if (error) {
       throw new Error(error.message);
     }
 
-    return data; // Return list of inserted plots
+    return data; // Return list of inserted/updated plots
   } catch (error) {
-    throw new Error("Failed to bulk insert plots: " + error.message);
+    throw new Error("Failed to bulk upsert plots: " + error.message);
   }
 }
 
