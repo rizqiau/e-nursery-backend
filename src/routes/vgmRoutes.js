@@ -1,15 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const {
-  bulkAddVgm,
+  bulkAddOrUpdateVgm,
   getVgmByPlot,
-  updateVgm,
   deleteVgm,
 } = require("../controllers/vgmController");
 
-router.post("/bulk_add", bulkAddVgm);
+router.post("/bulk_add_or_update", bulkAddOrUpdateVgm);
 router.get("/plot/:plotId", getVgmByPlot);
-router.put("/update", updateVgm);
 router.delete("/delete/:id", deleteVgm);
 
 module.exports = router;

@@ -7,7 +7,7 @@ const {
   deleteBaris,
 } = require("../controllers/barisController");
 
-router.post("/bulk_add", bulkAddOrUpdateBaris);
+router.post("/bulk_add_or_update", bulkAddOrUpdateBaris);
 router.get("/all", getAllBaris);
 router.get("/plot/:plotId", getBarisByPlot);
 router.delete("/delete/:id", deleteBaris);

@@ -1,6 +1,6 @@
 const supabase = require("../config/supabaseClient");
 
-async function bulkAddVgmToDb(vgmList) {
+async function bulkAddOrUpdateVgmToDb(vgmList) {
   try {
     const { data, error } = await supabase
       .from("vgm")
@@ -28,21 +28,6 @@ async function getVgmByPlotId(plotId) {
   }
 }
 
-async function updateVgmInDb(vgm) {
-  try {
-    const { data, error } = await supabase
-      .from("vgm")
-      .update(vgm)
-      .eq("id", vgm.id)
-      .select();
-
-    if (error) throw new Error(error.message);
-    return data[0];
-  } catch (error) {
-    throw new Error("Failed to update vgm: " + error.message);
-  }
-}
-
 async function deleteVgmFromDb(id) {
   try {
     const { error } = await supabase.from("vgm").delete().eq("id", id);
@@ -55,8 +40,7 @@ async function deleteVgmFromDb(id) {
 }
 
 module.exports = {
-  bulkAddVgmToDb,
+  bulkAddOrUpdateVgmToDb,
   getVgmByPlotId,
-  updateVgmInDb,
   deleteVgmFromDb,
 };
