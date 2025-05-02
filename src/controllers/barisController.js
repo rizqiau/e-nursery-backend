@@ -1,13 +1,11 @@
 const {
-  bulkAddBarisToDb,
+  bulkAddOrUpdateBarisToDb,
   getAllBarisFromDb,
   getBarisByPlotId,
-  updateBarisInDb,
-  bulkUpdateBarisToDb,
   deleteBarisFromDb,
 } = require("../services/barisServices");
 
-async function bulkAddBaris(req, res) {
+async function bulkAddOrUpdateBaris(req, res) {
   try {
     const barisList = req.body;
 
@@ -17,7 +15,7 @@ async function bulkAddBaris(req, res) {
       });
     }
 
-    const insertedBaris = await bulkAddBarisToDb(barisList);
+    const insertedBaris = await bulkAddOrUpdateBarisToDb(barisList);
 
     res.status(201).json({
       message: "Bulk insert baris berhasil",
@@ -54,25 +52,6 @@ async function getBarisByPlot(req, res) {
   }
 }
 
-async function bulkUpdateBaris(req, res) {
-  try {
-    const barisList = req.body;
-    if (!Array.isArray(barisList) || barisList.length === 0) {
-      return res.status(400).json({ message: "Data baris harus berupa array" });
-    }
-
-    const updatedBaris = await bulkUpdateBarisToDb(barisList);
-
-    return res.status(200).json({
-      message: "Bulk update baris berhasil",
-      data: updatedBaris,
-    });
-  } catch (error) {
-    console.error("[BARIS ERROR]", error);
-    return res.status(500).json({ message: error.message });
-  }
-}
-
 async function deleteBaris(req, res) {
   try {
     const id = req.params.id;
@@ -93,9 +72,8 @@ async function deleteBaris(req, res) {
 }
 
 module.exports = {
-  bulkAddBaris,
+  bulkAddOrUpdateBaris,
   getAllBaris,
   getBarisByPlot,
-  bulkUpdateBaris,
   deleteBaris,
 };

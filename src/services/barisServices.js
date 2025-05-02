@@ -1,6 +1,6 @@
 const supabase = require("../config/supabaseClient");
 
-async function bulkAddBarisToDb(barisList) {
+async function bulkAddOrUpdateBarisToDb(barisList) {
   try {
     // Pakai upsert biar gak error duplicate key
     const { data, error } = await supabase
@@ -39,36 +39,6 @@ async function getBarisByPlotId(plotId) {
   }
 }
 
-async function updateBarisInDb(baris) {
-  try {
-    const { data, error } = await supabase
-      .from("baris")
-      .update(baris)
-      .eq("id", baris.id)
-      .select();
-
-    if (error) throw new Error(error.message);
-    return data[0];
-  } catch (error) {
-    throw new Error("Failed to update baris: " + error.message);
-  }
-}
-
-async function bulkUpdateBarisToDb(barisList) {
-  try {
-    // Pakai upsert untuk bulk update
-    const { data, error } = await supabase
-      .from("baris")
-      .upsert(barisList, { onConflict: "id" })
-      .select();
-
-    if (error) throw new Error(error.message);
-    return data;
-  } catch (error) {
-    throw new Error("Failed to bulk update baris: " + error.message);
-  }
-}
-
 async function deleteBarisFromDb(id) {
   try {
     const { error } = await supabase.from("baris").delete().eq("id", id);
@@ -81,10 +51,8 @@ async function deleteBarisFromDb(id) {
 }
 
 module.exports = {
-  bulkAddBarisToDb,
+  bulkAddOrUpdateBarisToDb,
   getAllBarisFromDb,
   getBarisByPlotId,
-  updateBarisInDb,
-  bulkUpdateBarisToDb,
   deleteBarisFromDb,
 };
