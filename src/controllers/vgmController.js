@@ -1,6 +1,7 @@
 const {
   bulkAddOrUpdateVgmToDb,
   getVgmByPlotId,
+  getAllVgmFromDb,
   deleteVgmFromDb,
 } = require("../services/vgmServices");
 
@@ -41,6 +42,16 @@ async function getVgmByPlot(req, res) {
   }
 }
 
+async function getAllVgm(req, res) {
+  try {
+    const vgm = await getAllVgmFromDb();
+    res.status(200).json(vgm);
+  } catch (error) {
+    console.error("[VGM ERROR]", error);
+    res.status(500).json({ message: error.message });
+  }
+}
+
 async function deleteVgm(req, res) {
   try {
     const id = req.params.id;
@@ -63,5 +74,6 @@ async function deleteVgm(req, res) {
 module.exports = {
   bulkAddOrUpdateVgm,
   getVgmByPlot,
+  getAllVgm,
   deleteVgm,
 };
