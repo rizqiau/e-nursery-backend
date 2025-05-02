@@ -1,6 +1,6 @@
 const {
-  addOrUpdatePlot,
-  bulkAddOrUpdatePlots,
+  addOrUpdatePlotToDb,
+  bulkAddOrUpdatePlotsToDb,
   getAllPlotsFromDb,
   deletePlotFromDb,
 } = require("../services/plotServices");
@@ -32,7 +32,7 @@ async function addOrUpdatePlot(req, res) {
     }
 
     // Add plot to the database
-    const plot = await addPlotToDb({
+    const plot = await addOrUpdatePlotToDb({
       id_plot,
       nama_plot,
       luas_area,
@@ -64,7 +64,7 @@ async function bulkAddOrUpdatePlots(req, res) {
     }
 
     // Add plots to the database
-    const insertedPlots = await bulkAddPlotsToDb(plots);
+    const insertedPlots = await bulkAddOrUpdatePlotsToDb(plots);
 
     res.status(201).json({
       message: "Bulk insert plot berhasil",

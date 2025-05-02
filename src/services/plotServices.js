@@ -1,6 +1,6 @@
 const supabase = require("../config/supabaseClient");
 
-async function addOrUpdatePlot({
+async function addOrUpdatePlotToDb({
   id_plot,
   nama_plot,
   luas_area,
@@ -40,7 +40,7 @@ async function addOrUpdatePlot({
   }
 }
 
-async function bulkAddOrUpdatePlots(plots) {
+async function bulkAddOrUpdatePlotsToDb(plots) {
   try {
     // Ganti insert jadi upsert untuk handle duplicate key
     const { data, error } = await supabase
@@ -92,8 +92,8 @@ async function deletePlotFromDb(id_plot) {
 
 // Update module.exports
 module.exports = {
-  addOrUpdatePlot,
-  bulkAddOrUpdatePlots,
+  addOrUpdatePlotToDb,
+  bulkAddOrUpdatePlotsToDb,
   getAllPlotsFromDb,
   deletePlotFromDb,
 };
