@@ -1,13 +1,11 @@
 const {
-  addPlotToDb,
-  bulkAddPlotsToDb,
+  addOrUpdatePlot,
+  bulkAddOrUpdatePlots,
   getAllPlotsFromDb,
-  updatePlotInDb,
-  bulkUpdatePlotsToDb,
   deletePlotFromDb,
 } = require("../services/plotServices");
 
-async function addPlot(req, res) {
+async function addOrUpdatePlot(req, res) {
   try {
     const {
       id_plot,
@@ -55,7 +53,7 @@ async function addPlot(req, res) {
   }
 }
 
-async function bulkAddPlots(req, res) {
+async function bulkAddOrUpdatePlots(req, res) {
   try {
     const plots = req.body; // Expect array of plots
 
@@ -86,74 +84,6 @@ async function getAllPlots(req, res) {
   }
 }
 
-async function updatePlot(req, res) {
-  try {
-    const {
-      id_plot,
-      nama_plot,
-      luas_area,
-      tanggal_tanam,
-      tanggal_transplanting,
-      varietas,
-      latitude,
-      longitude,
-      jumlah_bibit,
-    } = req.body;
-
-    // Validate input
-    if (
-      !id_plot ||
-      !nama_plot ||
-      !luas_area ||
-      !tanggal_tanam ||
-      !latitude ||
-      !longitude
-    ) {
-      return res.status(400).json({ message: "Required fields missing" });
-    }
-
-    // Update plot di database
-    const plot = await updatePlotInDb({
-      id_plot,
-      nama_plot,
-      luas_area,
-      tanggal_tanam,
-      tanggal_transplanting,
-      varietas,
-      latitude,
-      longitude,
-      jumlah_bibit,
-    });
-
-    res.status(200).json({
-      message: "Plot updated successfully",
-      data: plot,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-async function bulkUpdatePlots(req, res) {
-  try {
-    const plots = req.body;
-    if (!Array.isArray(plots) || plots.length === 0) {
-      return res.status(400).json({ message: "Data plot harus berupa array" });
-    }
-
-    const updatedPlots = await bulkUpdatePlotsToDb(plots);
-
-    // PASTIKAN ini selalu dijalankan untuk selesaikan request!
-    return res.status(200).json({
-      message: "Bulk update berhasil",
-      data: updatedPlots,
-    });
-  } catch (error) {
-    // PASTIKAN error juga di-handle dengan proper response
-    return res.status(500).json({ message: error.message });
-  }
-}
-
 async function deletePlot(req, res) {
   try {
     const id_plot = req.params.id;
@@ -175,10 +105,8 @@ async function deletePlot(req, res) {
 
 // Update module.exports
 module.exports = {
-  addPlot,
-  bulkAddPlots,
+  addOrUpdatePlot,
+  bulkAddOrUpdatePlots,
   getAllPlots,
-  updatePlot,
-  bulkUpdatePlots,
   deletePlot,
 };

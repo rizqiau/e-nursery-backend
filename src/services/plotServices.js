@@ -1,6 +1,6 @@
 const supabase = require("../config/supabaseClient");
 
-async function addPlotToDb({
+async function addOrUpdatePlot({
   id_plot,
   nama_plot,
   luas_area,
@@ -40,7 +40,7 @@ async function addPlotToDb({
   }
 }
 
-async function bulkAddPlotsToDb(plots) {
+async function bulkAddOrUpdatePlots(plots) {
   try {
     // Ganti insert jadi upsert untuk handle duplicate key
     const { data, error } = await supabase
@@ -72,82 +72,6 @@ async function getAllPlotsFromDb() {
   }
 }
 
-async function updatePlotInDb({
-  id_plot,
-  nama_plot,
-  luas_area,
-  tanggal_tanam,
-  tanggal_transplanting,
-  varietas,
-  latitude,
-  longitude,
-  jumlah_bibit,
-}) {
-  try {
-    // Update data di tabel plot Supabase
-    const { data, error } = await supabase
-      .from("plot")
-      .update({
-        nama_plot,
-        luas_area,
-        tanggal_tanam,
-        tanggal_transplanting,
-        varietas,
-        latitude,
-        longitude,
-        jumlah_bibit,
-      })
-      .eq("id_plot", id_plot)
-      .select(); // Return data yang diupdate
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data[0]; // Return plot yang udah diupdate
-  } catch (error) {
-    throw new Error("Failed to update plot: " + error.message);
-  }
-}
-
-async function bulkUpdatePlotsToDb(plots) {
-  try {
-    // Update satu per satu (Supabase gak support bulk update)
-    const updatedPlots = [];
-
-    for (const plot of plots) {
-      const { data, error } = await supabase
-        .from("plot")
-        .update({
-          nama_plot: plot.nama_plot,
-          luas_area: plot.luas_area,
-          tanggal_tanam: plot.tanggal_tanam,
-          tanggal_transplanting: plot.tanggal_transplanting,
-          varietas: plot.varietas,
-          latitude: plot.latitude,
-          longitude: plot.longitude,
-          jumlah_bibit: plot.jumlah_bibit,
-        })
-        .eq("id_plot", plot.id_plot)
-        .select();
-
-      if (error) {
-        throw new Error(
-          `Failed to update plot ${plot.id_plot}: ${error.message}`
-        );
-      }
-
-      if (data && data.length > 0) {
-        updatedPlots.push(data[0]);
-      }
-    }
-
-    return updatedPlots; // Return list plot yang diupdate
-  } catch (error) {
-    throw new Error("Failed to bulk update plots: " + error.message);
-  }
-}
-
 async function deletePlotFromDb(id_plot) {
   try {
     // Delete data dari tabel plot di Supabase
@@ -168,10 +92,8 @@ async function deletePlotFromDb(id_plot) {
 
 // Update module.exports
 module.exports = {
-  addPlotToDb,
-  bulkAddPlotsToDb,
+  addOrUpdatePlot,
+  bulkAddOrUpdatePlots,
   getAllPlotsFromDb,
-  updatePlotInDb,
-  bulkUpdatePlotsToDb,
   deletePlotFromDb,
 };
