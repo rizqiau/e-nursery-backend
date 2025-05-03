@@ -5,6 +5,8 @@ const plotRoutes = require("./src/routes/plotRoutes");
 const uploadRoutes = require("./src/routes/uploadRoutes");
 const barisRoutes = require("./src/routes/barisRoutes");
 const vgmRoutes = require("./src/routes/vgmRoutes");
+const VgmHistoryRoutes = require("./src/routes/VgmHistoryRoutes");
+const batchRoutes = require("./src/routes/batchRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +21,8 @@ app.use("/api/plot", plotRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api/baris", barisRoutes);
 app.use("/api/vgm", vgmRoutes);
+app.use("/api/vgm_history", VgmHistoryRoutes);
+app.use("/api/batch", batchRoutes);
 
 // Root route (optional buat cek server nyala)
 app.get("/", (req, res) => {
