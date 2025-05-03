@@ -24,7 +24,19 @@ async function getAllVgmFromDb() {
   }
 }
 
+async function deleteVgmByPlotId(plotId) {
+  try {
+    const { error } = await supabase.from("vgm").delete().eq("id_plot", plotId);
+
+    if (error) throw new Error(error.message);
+    return { success: true };
+  } catch (error) {
+    throw new Error("Failed to delete VGM by plot: " + error.message);
+  }
+}
+
 module.exports = {
   bulkAddOrUpdateVgmToDb,
   getAllVgmFromDb,
+  deleteVgmByPlotId,
 };

@@ -1,6 +1,7 @@
 const {
   bulkAddOrUpdateVgmToDb,
   getAllVgmFromDb,
+  deleteVgmByPlotId,
 } = require("../services/vgmServices");
 
 async function bulkAddOrUpdateVgm(req, res) {
@@ -35,7 +36,26 @@ async function getAllVgm(req, res) {
   }
 }
 
+async function deleteVgmByPlot(req, res) {
+  try {
+    const plotId = req.params.plotId;
+    if (!plotId) {
+      return res.status(400).json({ message: "Plot ID is required" });
+    }
+
+    await deleteVgmByPlotId(plotId);
+
+    res.status(200).json({
+      message: "All VGM for plot deleted successfully",
+    });
+  } catch (error) {
+    console.error("[VGM ERROR]", error);
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   bulkAddOrUpdateVgm,
   getAllVgm,
+  deleteVgmByPlot,
 };
