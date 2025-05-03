@@ -24,7 +24,7 @@ app.use("/api/baris", barisRoutes);
 app.use("/api/vgm", vgmRoutes);
 app.use("/api/vgm_history", vgmHistoryRoutes);
 app.use("/api/batch", batchRoutes);
-app.use("/api/upload_foto", uploadFotoRoutes);
+app.use("/api", uploadFotoRoutes);
 
 // Root route (optional buat cek server nyala)
 app.get("/", (req, res) => {
