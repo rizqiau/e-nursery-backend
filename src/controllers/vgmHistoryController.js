@@ -1,7 +1,7 @@
 const {
   bulkAddOrUpdateVgmHistoryToDb,
   getAllVgmHistoryFromDb,
-} = require("./services/vgmHistoryServices");
+} = require("../services/vgmHistoryServices");
 
 async function bulkAddOrUpdateVgmHistory(req, res) {
   try {
