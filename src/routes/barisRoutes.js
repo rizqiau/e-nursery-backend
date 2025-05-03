@@ -4,6 +4,7 @@ const {
   bulkAddOrUpdateBaris,
   getAllBaris,
   deleteBarisByPlot,
+  deleteBaris,
 } = require("../controllers/barisController");
 
 router.post("/bulk_add_or_update", bulkAddOrUpdateBaris);
