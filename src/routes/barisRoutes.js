@@ -9,5 +9,6 @@ const {
 router.post("/bulk_add_or_update", bulkAddOrUpdateBaris);
 router.get("/all", getAllBaris);
 router.delete("/deleteByPlot/:plotId", deleteBarisByPlot);
+router.delete("/delete/:id", deleteBaris);
 
 module.exports = router;

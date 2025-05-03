@@ -2,6 +2,7 @@ const {
   bulkAddOrUpdateBarisToDb,
   getAllBarisFromDb,
   deleteBarisByPlotId,
+  deleteBarisById,
 } = require("../services/barisServices");
 
 async function bulkAddOrUpdateBaris(req, res) {
@@ -54,8 +55,27 @@ async function deleteBarisByPlot(req, res) {
   }
 }
 
+async function deleteBaris(req, res) {
+  try {
+    const barisId = req.params.id;
+    if (!barisId) {
+      return res.status(400).json({ message: "Baris ID is required" });
+    }
+
+    await deleteBarisById(barisId);
+
+    res.status(200).json({
+      message: "Baris deleted successfully",
+    });
+  } catch (error) {
+    console.error("[BARIS ERROR]", error);
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   bulkAddOrUpdateBaris,
   getAllBaris,
   deleteBarisByPlot,
+  deleteBaris,
 };

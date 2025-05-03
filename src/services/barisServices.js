@@ -39,8 +39,20 @@ async function deleteBarisByPlotId(plotId) {
   }
 }
 
+async function deleteBarisById(barisId) {
+  try {
+    const { error } = await supabase.from("baris").delete().eq("id", barisId);
+
+    if (error) throw new Error(error.message);
+    return { success: true };
+  } catch (error) {
+    throw new Error("Failed to delete baris: " + error.message);
+  }
+}
+
 module.exports = {
   bulkAddOrUpdateBarisToDb,
   getAllBarisFromDb,
   deleteBarisByPlotId,
+  deleteBarisById,
 };
